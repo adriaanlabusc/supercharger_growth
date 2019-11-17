@@ -1,0 +1,29 @@
+{
+  "id": 122,
+  "locationId": "sanjuancapistranosupercharger",
+  "name": "San Juan Capistrano, CA",
+  "status": "OPEN",
+  "address": {
+    "street": "31971 Camino Capistrano",
+    "city": "San Juan Capistrano",
+    "state": "CA",
+    "zip": "92675",
+    "countryId": 100,
+    "country": "USA",
+    "regionId": 100,
+    "region": "North America"
+  },
+  "gps": {
+    "latitude": 33.498458,
+    "longitude": -117.6632
+  },
+  "dateOpened": "2014-05-06",
+  "stallCount": 7,
+  "counted": true,
+  "elevationMeters": 30,
+  "powerKilowatt": 0,
+  "solarCanopy": false,
+  "battery": false,
+  "statusDays": 0,
+  "urlDiscuss": true
+}
