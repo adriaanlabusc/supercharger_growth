@@ -2,6 +2,9 @@
   <head>
     <!-- TODO: change this to v4 once you have it up and running -->
     <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+    <!-- the topojson and d3 queue are specific to the topojson map -->
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v2.min.js"></script>
     <!-- <script src="countries.json"></script> -->
     <script src="boston_neighborhoods.json"></script>
     <script src="superchargers.json"></script>
@@ -78,61 +81,80 @@
       var geoPath = d3.geoPath()
           .projection( albersProjection );
 
-      g.selectAll( "path" )
-          .data( neighborhoods_json.features )
-          .enter()
-          .append( "path" )
-          .attr( "fill", "#ccc" )
-          .attr( "stroke", "#333")
-          .attr( "d", geoPath );
-      var rodents = svg.append( "g" );
-      var path = rodents.selectAll( "path" )
-          .data( rodents_json.features )
-          .enter()
-          .append( "path" )
-          .attr("fill", initialDate)
-          .attr("stroke", "#ccc")
-          .attr("d", geoPath)
-          .attr("class","incident")
-          .on("mouseover", function(d){
-              d3.select("h2").text(d.properties.LOCATION_STREET_NAME);
-              d3.select(this).attr("class","incident hover");
-          })
-          .on("mouseout", function(d){
-              d3.select("h2").text("");
-              d3.select(this).attr("class","incident");
-          });
-      // when the input range changes update the value
-      d3.select("#timeslide").on("input", function() {
-          update(+this.value);
-      });
-      // update the fill of each SVG of class "incident"
-      function update(value) {
-          document.getElementById("range").innerHTML=month[value];
-          inputValue = month[value];
-          d3.selectAll(".incident")
-              .attr("fill", dateMatch);
+      d3.queue()
+        .defer(d3.json, "us.json") // Load US Counties
+        .await(ready); // Run 'ready' when JSONs are loaded
+
+
+      // Ready Function, runs when data is loaded
+      function ready(error, us) {
+        if (error) throw error;
+
+        svg.append("g")
+            .attr("class", "counties")
+          .selectAll("path")
+            .data(topojson.feature(us, us.objects.counties).features) // Bind TopoJSON data elements
+          .enter().append("path")
+            .attr("d", path)
+            .style("fill", "white")
+            .style("stroke", "black");
       }
-      function dateMatch(data, value) {
-          var d = new Date(data.properties.OPEN_DT);
-          var m = month[d.getMonth()];
-          if (inputValue == m) {
-              this.parentElement.appendChild(this);
-              return "red";
-          } else {
-              return "#999";
-          };
-      }
-      function initialDate(d,i){
-          var d = new Date(d.properties.OPEN_DT);
-          var m = month[d.getMonth()];
-          if (m == "January") {
-              this.parentElement.appendChild(this);
-              return "red";
-          } else {
-              return "#999";
-          };
-      }
+
+      // g.selectAll( "path" )
+      //     .data( neighborhoods_json.features )
+      //     .enter()
+      //     .append( "path" )
+      //     .attr( "fill", "#ccc" )
+      //     .attr( "stroke", "#333")
+      //     .attr( "d", geoPath );
+      // var rodents = svg.append( "g" );
+      // var path = rodents.selectAll( "path" )
+      //     .data( rodents_json.features )
+      //     .enter()
+      //     .append( "path" )
+      //     .attr("fill", initialDate)
+      //     .attr("stroke", "#ccc")
+      //     .attr("d", geoPath)
+      //     .attr("class","incident")
+      //     .on("mouseover", function(d){
+      //         d3.select("h2").text(d.properties.LOCATION_STREET_NAME);
+      //         d3.select(this).attr("class","incident hover");
+      //     })
+      //     .on("mouseout", function(d){
+      //         d3.select("h2").text("");
+      //         d3.select(this).attr("class","incident");
+      //     });
+      // // when the input range changes update the value
+      // d3.select("#timeslide").on("input", function() {
+      //     update(+this.value);
+      // });
+      // // update the fill of each SVG of class "incident"
+      // function update(value) {
+      //     document.getElementById("range").innerHTML=month[value];
+      //     inputValue = month[value];
+      //     d3.selectAll(".incident")
+      //         .attr("fill", dateMatch);
+      // }
+      // function dateMatch(data, value) {
+      //     var d = new Date(data.properties.OPEN_DT);
+      //     var m = month[d.getMonth()];
+      //     if (inputValue == m) {
+      //         this.parentElement.appendChild(this);
+      //         return "red";
+      //     } else {
+      //         return "#999";
+      //     };
+      // }
+      // function initialDate(d,i){
+      //     var d = new Date(d.properties.OPEN_DT);
+      //     var m = month[d.getMonth()];
+      //     if (m == "January") {
+      //         this.parentElement.appendChild(this);
+      //         return "red";
+      //     } else {
+      //         return "#999";
+      //     };
+      // }
     </script>
 
 
