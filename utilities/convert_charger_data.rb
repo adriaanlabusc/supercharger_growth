@@ -1,3 +1,6 @@
+require 'pp'
+require 'json'
+
 # {
 #  "type": "FeatureCollection",
 
@@ -19,7 +22,7 @@
 
 # console.log(superchargers);
 # example structure
-# {
+# [{
 #   "id": 122,
 #   "locationId": "sanjuancapistranosupercharger",
 #   "name": "San Juan Capistrano, CA",
@@ -47,7 +50,7 @@
 #   "battery": false,
 #   "statusDays": 0,
 #   "urlDiscuss": true
-# }
+# }]
 
 
 # INTO
@@ -62,7 +65,33 @@
 #   ]
 # }
 
-def convert_charger_data_to_geo_json_features
-
-
+def convert_charger_data_to_geo_json_features superchargers
+  sc_geo_json = {
+    type: "FeatureCollection",
+    features: []
+  }
+  superchargers.each do |sc|
+    sc_geo_json[:features] << {
+      type: "Feature",
+      id: sc["id"],
+      properties: { address: sc["address"], name: sc["name"]},
+      geometry: { type: "Point", coordinates: [sc["gps"]["longitude"], sc["gps"]["latitude"]] }
+    }
+  end
+  sc_geo_json
 end
+
+input_file_path = File.dirname(__FILE__) + "/../superchargers.json"
+input = JSON.parse(File.read(input_file_path))
+
+puts "the input class: #{input.class}"
+puts input
+
+geo_json = JSON.generate(convert_charger_data_to_geo_json_features(input))
+File.open('super_charger_geo_json.json', 'w') do |fh|
+  # once loaded via a script tag the superchargers variable will
+  # contain the json
+  fh.puts("var superchargers = " + geo_json)
+end
+
+
