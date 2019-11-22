@@ -3,14 +3,29 @@
     <!-- TODO: change this to v4 once you have it up and running -->
     <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
     <!-- <script src="countries.json"></script> -->
+    <!-- data is originally from https://supercharge.info/map -->
     <script src="world_geo_json_high.json"></script>
     <script src="super_charger_geo_json.json"></script>
 
     <script src="boston_rodents.json"></script>
-
   </head>
+
+  <style>
+    .incident {
+
+    }
+
+   .hover {
+      fill: yellow;
+    }
+  </style>
+
+
+
   <body>
     <h3>The map</h3>
+
+    <div id="location"><h4></h4></div>
 
     <div id="sliderContainer">
         <input id="timeslide" type="range" min="0" max="11" value="0" step="1"/><br>
@@ -18,40 +33,6 @@
     </div>
 
     <script>
-      // console.log(superchargers);
-      // example structure
-      // {
-      //   "id": 122,
-      //   "locationId": "sanjuancapistranosupercharger",
-      //   "name": "San Juan Capistrano, CA",
-      //   "status": "OPEN",
-      //   "address": {
-      //     "street": "31971 Camino Capistrano",
-      //     "city": "San Juan Capistrano",
-      //     "state": "CA",
-      //     "zip": "92675",
-      //     "countryId": 100,
-      //     "country": "USA",
-      //     "regionId": 100,
-      //     "region": "North America"
-      //   },
-      //   "gps": {
-      //     "latitude": 33.498458,
-      //     "longitude": -117.6632
-      //   },
-      //   "dateOpened": "2014-05-06",
-      //   "stallCount": 7,
-      //   "counted": true,
-      //   "elevationMeters": 30,
-      //   "powerKilowatt": 0,
-      //   "solarCanopy": false,
-      //   "battery": false,
-      //   "statusDays": 0,
-      //   "urlDiscuss": true
-      // }
-
-      // data is from https://supercharge.info/map
-
       var width = 1250;
       var height = 680;
       var inputValue = null;
@@ -71,8 +52,8 @@
       // Rotate the map sets the longitude of origin for our Albers projection. Center sets a single standard parallel at 42.313, about the latitude of Boston.
       // translate is a pixel offset, commonly specified to ensure that the center of the projection is in the center of the viewing area.
       var projection = d3.geoMercator()
-          .scale(180 ) //190000
-          .rotate( [0,0] ) // [71.057,0]
+          .scale(180 )
+          .rotate( [0,0] )
           .center( [0, 42.313] )
           .translate( [width/2,height/2] );
 
@@ -98,11 +79,11 @@
           .on("mouseover", function(d){
             console.log('hello')
             console.log(d.properties.name);
-              // d3.select("h2").text(d.properties.name); // LOCATION_STREET_NAME
-              // d3.select(this).attr("class","incident hover");
+              d3.select("#location h4").text(d.properties.name); // LOCATION_STREET_NAME
+              d3.select(this).attr("class","incident hover");
           })
           .on("mouseout", function(d){
-              d3.select("h2").text("");
+              d3.select("#location h4").text("");
               d3.select(this).attr("class","incident");
           });
       // when the input range changes update the value
