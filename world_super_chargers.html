@@ -3,7 +3,7 @@
     <!-- TODO: change this to v4 once you have it up and running -->
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <!-- <script src="countries.json"></script> -->
-    <script src="north_america_geo_json.json"></script>
+    <script src="world_geo_json_high.json"></script>
     <script src="super_charger_geo_json.json"></script>
 
     <script src="boston_rodents.json"></script>
@@ -80,7 +80,7 @@
           .projection( albersProjection );
 
       g.selectAll( "path" )
-          .data(north_america_geo_json.features)
+          .data(world_geo_json.features)
           .enter()
           .append( "path" )
           .attr( "fill", "#ccc" )
