@@ -1,7 +1,7 @@
 <html lang="en">
   <head>
     <!-- TODO: change this to v4 once you have it up and running -->
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
     <!-- <script src="countries.json"></script> -->
     <script src="world_geo_json_high.json"></script>
     <script src="super_charger_geo_json.json"></script>
@@ -52,7 +52,7 @@
 
       // data is from https://supercharge.info/map
 
-      var width = 1050;
+      var width = 1250;
       var height = 680;
       var inputValue = null;
       var month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -70,14 +70,14 @@
       // Scale sets the scale of the map (ie 1 is the smallest, the larger the numbr the more zoomed in you are, you can fiddle with this until it works). Rotate and center set parameters for the project. A full global map fits nicely around 100. The extent of Boston lands at about 190000 with our extents.
       // Rotate the map sets the longitude of origin for our Albers projection. Center sets a single standard parallel at 42.313, about the latitude of Boston.
       // translate is a pixel offset, commonly specified to ensure that the center of the projection is in the center of the viewing area.
-      var albersProjection = d3.geo.albers()
-          .scale(400 ) //190000
-          .rotate( [71.057,0] )
+      var projection = d3.geoMercator()
+          .scale(180 ) //190000
+          .rotate( [0,0] ) // [71.057,0]
           .center( [0, 42.313] )
           .translate( [width/2,height/2] );
 
-      var geoPath = d3.geo.path()
-          .projection( albersProjection );
+      var geoPath = d3.geoPath()
+          .projection( projection );
 
       g.selectAll( "path" )
           .data(world_geo_json.features)
