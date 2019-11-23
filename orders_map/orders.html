@@ -4,7 +4,7 @@
     <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
     <!-- <script src="countries.json"></script> -->
     <!-- data is originally from https://supercharge.info/map -->
-    <script src="world_geo_json_medium.json"></script>
+    <script src="world_geo_json_high.json"></script>
     <script src="super_charger_geo_json.json"></script>
 
     <script src="boston_rodents.json"></script>
@@ -14,13 +14,7 @@
    .hover {
       fill: yellow;
     }
-
-    #location {
-      float: right;
-    }
   </style>
-
-
 
   <body>
     <h3>The map</h3>
@@ -36,16 +30,7 @@
       var width = 1250;
       var height = 680;
       var inputValue = null;
-      // var month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-      var month = ["2012-12-19", "2013-04-19", "2013-07-19", "2013-09-19", "2013-11-25", "2013-12-28", "2013-01-28", "2013-03-28"];
-      // var month = [];
-      // var temp_date = new Date('2012-12-19');
-      // for (var i = 0; i < 20; i++) {
-      //   month.push(temp_date)
-
-      //   temp_date = (new Date()).setDate temp_date + 30;
-      // }
-
+      var month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
       var svg = d3.select( "body" )
           .append( "svg" )
           .attr( "width", width )
@@ -86,8 +71,10 @@
           .attr("d", geoPath)
           .attr("class","incident")
           .on("mouseover", function(d){
-            d3.select("#location h4").text(d.properties.name + " " + d.properties.dateOpened); // LOCATION_STREET_NAME
-            d3.select(this).attr("class","incident hover");
+            console.log('hello')
+            console.log(d.properties.name);
+              d3.select("#location h4").text(d.properties.name); // LOCATION_STREET_NAME
+              d3.select(this).attr("class","incident hover");
           })
           .on("mouseout", function(d){
               d3.select("#location h4").text("");
@@ -103,22 +90,16 @@
       // update the fill of each SVG of class "incident"
       function update(value) {
           document.getElementById("range").innerHTML=month[value];
-          // inputValue = month[value];
           inputValue = month[value];
           d3.selectAll(".incident")
               .attr("fill", dateMatch); // looks like giving it a function lets the method be called immediately
       }
       function dateMatch(data, value) {
-          if (!data.properties.dateOpened) {
-            return "#999";
-          }
-
           var d = new Date(data.properties.dateOpened); // OPEN_DT
-          // var m = month[d.getMonth()];
-
-          // 221 do not have dates so skip them
-
-          if (d < new Date(inputValue)) {
+          var m = month[d.getMonth()];
+          if (inputValue == m) {
+              // `this` seems to be the .incident
+              console.log(this)
               this.parentElement.appendChild(this);
               return "red";
           } else {
@@ -128,21 +109,10 @@
           };
       }
       // TODO: this is basically a duplicate function
-      function initialDate(data,i){
-          // 221 do not have dates so skip them
-          if (!data.properties.dateOpened) {
-            return "#999";
-          }
-
-          var dateOpened = new Date(data.properties.dateOpened);
-          // var m = month[d.getMonth()];
-          // console.log('initial_date: the month');
-
-          // date the first supercharger was openeed: 2012-11-19
-          // a month later 2012-12-19
-          console.log(dateOpened)
-          console.log()
-          if (dateOpened < new Date('2012-12-19')) {
+      function initialDate(d,i){
+          var d = new Date(d.properties.dateOpened);
+          var m = month[d.getMonth()];
+          if (m == "January") {
               this.parentElement.appendChild(this);
               return "red";
           } else {

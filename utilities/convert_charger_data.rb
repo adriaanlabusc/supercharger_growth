@@ -74,7 +74,7 @@ def convert_charger_data_to_geo_json_features superchargers
     sc_geo_json[:features] << {
       type: "Feature",
       id: sc["id"],
-      properties: { address: sc["address"], name: sc["name"]},
+      properties: { address: sc["address"], name: sc["name"], dateOpened: sc["dateOpened"]},
       geometry: { type: "Point", coordinates: [sc["gps"]["longitude"], sc["gps"]["latitude"]] }
     }
   end
