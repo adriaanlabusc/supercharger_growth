@@ -15,6 +15,10 @@
       fill: yellow;
     }
 
+    #timeslide {
+      width: 500px;
+    }
+
     #location {
       float: right;
     }
@@ -28,7 +32,7 @@
     <div id="location"><h4></h4></div>
 
     <div id="sliderContainer">
-        <input id="timeslide" type="range" min="0" max="11" value="0" step="1"/><br>
+        <input id="timeslide" type="range" min="0" max="2516" value="0" step="1"/><br>
         <span id="range">January</span>
     </div>
 
@@ -37,7 +41,7 @@
       var height = 680;
       var inputValue = null;
       // var month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-      var month = ["2012-12-19", "2013-04-19", "2013-07-19", "2013-09-19", "2013-11-25", "2013-12-28", "2013-01-28", "2013-03-28"];
+      // var month = ["2012-12-19", "2013-04-19", "2013-07-19", "2013-09-19", "2013-11-25", "2013-12-28", "2013-01-28", "2013-03-28"];
       // var month = [];
       // var temp_date = new Date('2012-12-19');
       // for (var i = 0; i < 20; i++) {
@@ -45,6 +49,12 @@
 
       //   temp_date = (new Date()).setDate temp_date + 30;
       // }
+      var start = new Date('2012-12-19');
+      var end = new Date('2019-11-09')
+      var month = [];
+      for (var d = start; d <= end; d.setDate(d.getDate() + 1)) {
+        month.push(new Date(d));
+      }
 
       var svg = d3.select( "body" )
           .append( "svg" )
@@ -95,8 +105,6 @@
           });
       // when the input range changes update the value
       d3.select("#timeslide").on("input", function() {
-          console.log('this.value');
-          console.log(+this.value)
           // the `+` just casts this to an integer
           update(+this.value);
       });
@@ -114,10 +122,7 @@
           }
 
           var d = new Date(data.properties.dateOpened); // OPEN_DT
-          // var m = month[d.getMonth()];
-
           // 221 do not have dates so skip them
-
           if (d < new Date(inputValue)) {
               this.parentElement.appendChild(this);
               return "red";
