@@ -24,8 +24,6 @@
     }
   </style>
 
-
-
   <body>
     <h3>The map</h3>
 
@@ -40,20 +38,16 @@
       var width = 1250;
       var height = 680;
       var inputValue = null;
-      // var month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-      // var month = ["2012-12-19", "2013-04-19", "2013-07-19", "2013-09-19", "2013-11-25", "2013-12-28", "2013-01-28", "2013-03-28"];
-      // var month = [];
-      // var temp_date = new Date('2012-12-19');
-      // for (var i = 0; i < 20; i++) {
-      //   month.push(temp_date)
 
-      //   temp_date = (new Date()).setDate temp_date + 30;
-      // }
       var start = new Date('2012-12-19');
       var end = new Date('2019-11-09')
-      var month = [];
+      var days = [];
       for (var d = start; d <= end; d.setDate(d.getDate() + 1)) {
-        month.push(new Date(d));
+        days.push(new Date(d));
+      }
+
+      var getDay = function(index) {
+        return days[index];
       }
 
       var svg = d3.select( "body" )
@@ -110,9 +104,9 @@
       });
       // update the fill of each SVG of class "incident"
       function update(value) {
-          document.getElementById("range").innerHTML=month[value];
-          // inputValue = month[value];
-          inputValue = month[value];
+          document.getElementById("range").innerHTML=getDay(value);
+          // inputValue = days[value];
+          inputValue = getDay(value); //days[value];
           d3.selectAll(".incident")
               .attr("fill", dateMatch); // looks like giving it a function lets the method be called immediately
       }
@@ -140,7 +134,7 @@
           }
 
           var dateOpened = new Date(data.properties.dateOpened);
-          // var m = month[d.getMonth()];
+          // var m = days[d.getMonth()];
           // console.log('initial_date: the month');
 
           // date the first supercharger was openeed: 2012-11-19
