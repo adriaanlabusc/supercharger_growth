@@ -83,6 +83,13 @@
         .center([0, 42.313])
         .translate([width / 2, height / 2]);
 
+      // function zoomed() {
+      //   g.attr(
+      //     "transform",
+      //     "translate(" + zoom.translate() + ")scale(" + zoom.scale() + ")"
+      //   );
+      // }
+
       var geoPath = d3.geoPath().projection(projection);
 
       g.selectAll("path")
@@ -92,8 +99,10 @@
         .attr("fill", "#ccc")
         .attr("stroke", "#333")
         .attr("d", geoPath);
+
       var rodents = svg.append("g");
-      var path = rodents
+
+      var rodentsPath = rodents
         .selectAll("path")
         .data(superchargers.features) //rodents_json.features )
         .enter()
@@ -112,11 +121,43 @@
           d3.select("#location h4").text("");
           d3.select(this).attr("class", "incident");
         });
+
+      var zoom = d3
+        .zoom()
+        .scaleExtent([1, 8])
+        .on("zoom", zoomed);
+
+      var pointRadius = 4.5;
+
+      function zoomed() {
+        const { transform } = d3.event;
+        // below two seem to move and zoom the map
+        g.attr("transform", transform);
+        g.attr("stroke-width", 1 / transform.k);
+        // these will hopefully do the same for the dots
+        rodents.attr("transform", transform);
+        // keep the outside line of the dots small
+        rodents.attr("stroke-width", 1 / transform.k);
+
+        // this lets the dots get smaller as you zoom in
+        rodentsPath.attr(
+          "d",
+          geoPath.pointRadius(function(d) {
+            return pointRadius / transform.k;
+          })
+        );
+
+        //
+      }
+
+      svg.call(zoom); //.call(zoom.event);
+
       // when the input range changes update the value
       d3.select("#timeslide").on("input", function() {
         // the `+` just casts this to an integer
         update(+this.value);
       });
+
       // update the fill of each SVG of class "incident"
       function update(value) {
         document.getElementById("range").innerHTML = getDay(value);
@@ -124,6 +165,7 @@
         inputValue = getDay(value); //days[value];
         d3.selectAll(".incident").attr("fill", dateMatch); // looks like giving it a function lets the method be called immediately
       }
+
       function dateMatch(data, value) {
         if (!data.properties.dateOpened) {
           return "#999";
@@ -140,6 +182,7 @@
           return "#999";
         }
       }
+
       // TODO: this is basically a duplicate function
       function initialDate(data, i) {
         // 221 do not have dates so skip them
@@ -148,13 +191,8 @@
         }
 
         var dateOpened = new Date(data.properties.dateOpened);
-        // var m = days[d.getMonth()];
-        // console.log('initial_date: the month');
-
         // date the first supercharger was openeed: 2012-11-19
         // a month later 2012-12-19
-        console.log(dateOpened);
-        console.log();
         if (dateOpened < new Date("2012-12-19")) {
           this.parentElement.appendChild(this);
           return "red";
