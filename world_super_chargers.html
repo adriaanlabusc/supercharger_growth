@@ -7,7 +7,7 @@
     <script src="world_geo_json_medium.json"></script>
     <script src="super_charger_geo_json.json"></script>
 
-    <script src="boston_rodents.json"></script>
+    <script src="boston_superChargers.json"></script>
   </head>
 
   <style>
@@ -39,10 +39,6 @@
         step="1"
       /><br />
       <span id="range">January</span>
-    </div>
-    <div id="zoom-buttons">
-      <button id="zoom-in">Zoom In</button
-      ><button id="zoom-out">Zoom Out</button>
     </div>
 
     <script>
@@ -100,11 +96,11 @@
         .attr("stroke", "#333")
         .attr("d", geoPath);
 
-      var rodents = svg.append("g");
+      var superChargers = svg.append("g");
 
-      var rodentsPath = rodents
+      var superChargersPath = superChargers
         .selectAll("path")
-        .data(superchargers.features) //rodents_json.features )
+        .data(superchargers.features) //superChargers_json.features )
         .enter()
         .append("path")
         .attr("fill", initialDate) // looks like this is run immediately for each path
@@ -128,6 +124,7 @@
         .on("zoom", zoomed);
 
       var pointRadius = 4.5;
+      var zoomCounter = 0;
 
       function zoomed() {
         const { transform } = d3.event;
@@ -135,22 +132,26 @@
         g.attr("transform", transform);
         g.attr("stroke-width", 1 / transform.k);
         // these will hopefully do the same for the dots
-        rodents.attr("transform", transform);
+        superChargers.attr("transform", transform);
         // keep the outside line of the dots small
-        rodents.attr("stroke-width", 1 / transform.k);
+        superChargers.attr("stroke-width", 1 / transform.k);
 
-        // this lets the dots get smaller as you zoom in
-        rodentsPath.attr(
-          "d",
-          geoPath.pointRadius(function(d) {
-            return pointRadius / transform.k;
-          })
-        );
-
-        //
+        // for better performance do not resize
+        // the dots every time this funciton runs...I hope anyway
+        zoomCounter++;
+        if (zoomCounter >= 10) {
+          zoomCounter = 0;
+          // this lets the dots get smaller as you zoom in
+          superChargersPath.attr(
+            "d",
+            geoPath.pointRadius(function(d) {
+              return pointRadius / transform.k;
+            })
+          );
+        }
       }
 
-      svg.call(zoom); //.call(zoom.event);
+      svg.call(zoom);
 
       // when the input range changes update the value
       d3.select("#timeslide").on("input", function() {
@@ -171,9 +172,9 @@
           return "#999";
         }
 
-        var d = new Date(data.properties.dateOpened); // OPEN_DT
+        var dateOpened = new Date(data.properties.dateOpened); // OPEN_DT
         // 221 do not have dates so skip them
-        if (d < new Date(inputValue)) {
+        if (dateOpened < new Date(inputValue)) {
           this.parentElement.appendChild(this);
           return "red";
         } else {
