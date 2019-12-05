@@ -103,7 +103,7 @@
         .data(superchargers.features) //superChargers_json.features )
         .enter()
         .append("path")
-        .attr("fill", initialDate) // looks like this is run immediately for each path
+        .attr("fill", "#999")
         .attr("stroke", "#ccc")
         .attr("d", geoPath)
         .attr("class", "incident")
@@ -162,8 +162,7 @@
       // update the fill of each SVG of class "incident"
       function update(value) {
         document.getElementById("range").innerHTML = getDay(value);
-        // inputValue = days[value];
-        inputValue = getDay(value); //days[value];
+        inputValue = getDay(value);
         d3.selectAll(".incident").attr("fill", dateMatch); // looks like giving it a function lets the method be called immediately
       }
 
@@ -172,8 +171,8 @@
           return "#999";
         }
 
-        var dateOpened = new Date(data.properties.dateOpened); // OPEN_DT
-        // 221 do not have dates so skip them
+        var dateOpened = new Date(data.properties.dateOpened);
+        // 221 superchargers do not have dates so skip them
         if (dateOpened < new Date(inputValue)) {
           this.parentElement.appendChild(this);
           return "red";
@@ -184,23 +183,8 @@
         }
       }
 
-      // TODO: this is basically a duplicate function
-      function initialDate(data, i) {
-        // 221 do not have dates so skip them
-        if (!data.properties.dateOpened) {
-          return "#999";
-        }
-
-        var dateOpened = new Date(data.properties.dateOpened);
-        // date the first supercharger was openeed: 2012-11-19
-        // a month later 2012-12-19
-        if (dateOpened < new Date("2012-12-19")) {
-          this.parentElement.appendChild(this);
-          return "red";
-        } else {
-          return "#999";
-        }
-      }
+      // the slider is on zero when the page loads
+      update(0);
 
       document.addEventListener(
         "click",
