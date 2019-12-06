@@ -103,8 +103,9 @@
         .data(superchargers.features) //superChargers_json.features )
         .enter()
         .append("path")
-        .attr("fill", "#999")
+        .attr("fill", "red")
         .attr("stroke", "#ccc")
+        .attr("opacity", "0.0") // initially none of them are visible
         .attr("d", geoPath)
         .attr("class", "incident")
         .on("mouseover", function(d) {
@@ -163,23 +164,23 @@
       function update(value) {
         document.getElementById("range").innerHTML = getDay(value);
         inputValue = getDay(value);
-        d3.selectAll(".incident").attr("fill", dateMatch); // looks like giving it a function lets the method be called immediately
+        d3.selectAll(".incident").attr("opacity", dateMatch); // looks like giving it a function lets the method be called immediately
       }
 
       function dateMatch(data, value) {
         if (!data.properties.dateOpened) {
-          return "#999";
+          return "0.0";
         }
 
         var dateOpened = new Date(data.properties.dateOpened);
         // 221 superchargers do not have dates so skip them
         if (dateOpened < new Date(inputValue)) {
           this.parentElement.appendChild(this);
-          return "red";
+          return "1.0";
         } else {
           // why do we not need to remove anything? The total number of nodes do not seem to increase
           // despite this.
-          return "#999";
+          return "0.0";
         }
       }
 
