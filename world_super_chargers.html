@@ -22,10 +22,55 @@
     #location {
       float: right;
     }
+
+    header {
+      /* display: flexbox; */
+      width: 100%;
+      background: black;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    header h3 {
+      color: white;
+      margin: 0;
+      padding: 10px;
+      text-align: center;
+      font-family: Gotham Medium, "M Hei PRC W45", "M Hei HK W42",
+        "M Hei HK W40", "HelveticaNeue-Regular", "Helvetica Neue Regular",
+        "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: normal;
+      display: block;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    #map-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    #map-container svg {
+      border: 2px solid rgb(90, 48, 48);
+    }
+
+    #sliderContainer {
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
   </style>
 
   <body>
-    <h3>The map</h3>
+    <header>
+      <h3>TESLA SUPERCHARGER GROWTH</h3>
+    </header>
 
     <div id="location"><h4></h4></div>
 
@@ -37,13 +82,15 @@
         max="2516"
         value="0"
         step="1"
-      /><br />
-      <span id="range">January</span>
+      />
+      <span id="range"></span>
     </div>
 
+    <div id="map-container"></div>
+
     <script>
-      var width = 1250;
-      var height = 680;
+      var width = 1050;
+      var height = 640;
       var inputValue = null;
 
       var start = new Date("2012-12-19");
@@ -58,7 +105,7 @@
       };
 
       var svg = d3
-        .select("body")
+        .select("#map-container")
         .append("svg")
         .attr("width", width)
         .attr("height", height);
@@ -74,7 +121,7 @@
       // translate is a pixel offset, commonly specified to ensure that the center of the projection is in the center of the viewing area.
       var projection = d3
         .geoMercator()
-        .scale(180)
+        .scale(150)
         .rotate([0, 0])
         .center([0, 42.313])
         .translate([width / 2, height / 2]);
@@ -107,17 +154,7 @@
         .attr("stroke", "#ccc")
         .attr("opacity", "0.0") // initially none of them are visible
         .attr("d", geoPath)
-        .attr("class", "incident")
-        .on("mouseover", function(d) {
-          d3.select("#location h4").text(
-            d.properties.name + " " + d.properties.dateOpened
-          ); // LOCATION_STREET_NAME
-          d3.select(this).attr("class", "incident hover");
-        })
-        .on("mouseout", function(d) {
-          d3.select("#location h4").text("");
-          d3.select(this).attr("class", "incident");
-        });
+        .attr("class", "incident");
 
       var zoom = d3
         .zoom()
