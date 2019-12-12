@@ -58,12 +58,13 @@
     }
 
     #sliderContainer {
-      height: 80px;
+      height: 70px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-around;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      margin-top: 10px;
     }
   </style>
 
@@ -91,7 +92,7 @@
     <script>
       var width = 1050;
       var height = 640;
-      var inputValue = null;
+      var currentDate = null;
 
       var start = new Date("2012-12-19");
       var end = new Date("2019-11-09");
@@ -116,22 +117,16 @@
 
       // Width and Height of the whole visualization
       // Set Projection Parameters
-      // Scale sets the scale of the map (ie 1 is the smallest, the larger the numbr the more zoomed in you are, you can fiddle with this until it works). Rotate and center set parameters for the project. A full global map fits nicely around 100. The extent of Boston lands at about 190000 with our extents.
-      // Rotate the map sets the longitude of origin for our Albers projection. Center sets a single standard parallel at 42.313, about the latitude of Boston.
-      // translate is a pixel offset, commonly specified to ensure that the center of the projection is in the center of the viewing area.
+      // Scale sets the scale of the map (ie 1 is the smallest, the larger the number the more zoomed in you are).
+      // Rotate sets the longitude of origin for the projection. Center sets a single standard parallel at 42.313.
+      // Translate is a pixel offset, commonly specified to ensure that the center of the projection
+      // is in the center of the viewing area.
       var projection = d3
         .geoMercator()
         .scale(150)
         .rotate([0, 0])
         .center([0, 42.313])
         .translate([width / 2, height / 2]);
-
-      // function zoomed() {
-      //   g.attr(
-      //     "transform",
-      //     "translate(" + zoom.translate() + ")scale(" + zoom.scale() + ")"
-      //   );
-      // }
 
       var geoPath = d3.geoPath().projection(projection);
 
@@ -147,14 +142,14 @@
 
       var superChargersPath = superChargers
         .selectAll("path")
-        .data(superchargers.features) //superChargers_json.features )
+        .data(superchargers.features)
         .enter()
         .append("path")
         .attr("fill", "red")
         .attr("stroke", "#ccc")
         .attr("opacity", "0.0") // initially none of them are visible
         .attr("d", geoPath)
-        .attr("class", "incident");
+        .attr("class", "supercharger");
 
       var zoom = d3
         .zoom()
@@ -169,10 +164,9 @@
         // below two seem to move and zoom the map
         g.attr("transform", transform);
         g.attr("stroke-width", 1 / transform.k);
-        // these will hopefully do the same for the dots
+        // these do the same for the dots
         superChargers.attr("transform", transform);
-        // keep the outside line of the dots small
-        superChargers.attr("stroke-width", 1 / transform.k);
+        superChargers.attr("stroke-width", 1 / transform.k); // keep the outside line of the dots small
 
         // for better performance do not resize
         // the dots every time this funciton runs...I hope anyway
@@ -191,27 +185,29 @@
 
       svg.call(zoom);
 
-      // when the input range changes update the value
       d3.select("#timeslide").on("input", function() {
-        // the `+` just casts this to an integer
-        update(+this.value);
+        update(parseInt(this.value));
       });
 
-      // update the fill of each SVG of class "incident"
       function update(value) {
-        document.getElementById("range").innerHTML = getDay(value);
-        inputValue = getDay(value);
-        d3.selectAll(".incident").attr("opacity", dateMatch); // looks like giving it a function lets the method be called immediately
+        let dateOptions = { year: "numeric", month: "numeric", day: "numeric" };
+        document.getElementById("range").innerHTML = getDay(
+          value
+        ).toLocaleDateString("en-CA", dateOptions);
+        currentDate = getDay(value);
+        // show chargers that were opened before `currentDate`, hide chargers
+        // that opened after
+        d3.selectAll(".supercharger").attr("opacity", getOpacity);
       }
 
-      function dateMatch(data, value) {
+      function getOpacity(data, value) {
         if (!data.properties.dateOpened) {
+          // if it's not open yet don't show it
           return "0.0";
         }
 
         var dateOpened = new Date(data.properties.dateOpened);
-        // 221 superchargers do not have dates so skip them
-        if (dateOpened < new Date(inputValue)) {
+        if (dateOpened < new Date(currentDate)) {
           this.parentElement.appendChild(this);
           return "1.0";
         } else {
@@ -223,21 +219,6 @@
 
       // the slider is on zero when the page loads
       update(0);
-
-      document.addEventListener(
-        "click",
-        function(event) {
-          // If the clicked element doesn't have the right selector, bail
-          if (!event.target.matches(".click-me")) return;
-
-          // Don't follow the link
-          event.preventDefault();
-
-          // Log the clicked element in the console
-          console.log(event.target);
-        },
-        false
-      );
     </script>
   </body>
 </html>
