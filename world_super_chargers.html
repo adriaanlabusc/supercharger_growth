@@ -1,13 +1,9 @@
 <html lang="en">
   <head>
-    <!-- TODO: change this to v4 once you have it up and running -->
     <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
-    <!-- <script src="countries.json"></script> -->
-    <!-- data is originally from https://supercharge.info/map -->
+    <!-- data is taken from from https://supercharge.info/map -->
     <script src="world_geo_json_medium.json"></script>
     <script src="super_charger_geo_json.json"></script>
-
-    <script src="boston_superChargers.json"></script>
   </head>
 
   <style>
@@ -17,10 +13,6 @@
 
     #timeslide {
       width: 500px;
-    }
-
-    #location {
-      float: right;
     }
 
     header {
@@ -73,8 +65,6 @@
       <h3>TESLA SUPERCHARGER GROWTH</h3>
     </header>
 
-    <div id="location"><h4></h4></div>
-
     <div id="sliderContainer">
       <input
         id="timeslide"
@@ -84,7 +74,7 @@
         value="0"
         step="1"
       />
-      <span id="range"></span>
+      <span id="date-display"></span>
     </div>
 
     <div id="map-container"></div>
@@ -191,7 +181,7 @@
 
       function update(value) {
         let dateOptions = { year: "numeric", month: "numeric", day: "numeric" };
-        document.getElementById("range").innerHTML = getDay(
+        document.getElementById("date-display").innerHTML = getDay(
           value
         ).toLocaleDateString("en-CA", dateOptions);
         currentDate = getDay(value);
